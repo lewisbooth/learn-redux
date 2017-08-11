@@ -11,6 +11,14 @@ const defaultState = {
   comments
 }
 
-export const store = createStore(rootReducer, defaultState);
+// Hot-reload reducers because it's not 2016 anymore
+if (module.hot) {
+  module.hot.accept('./reducers', () => {
+    const nextRootReducer = require('./reducers/index').rootReducer;
+    store.replaceReducer(nextRootReducer)
+  })
+}
+
+export const store = createStore(rootReducer, defaultState, compose(window.devToolsExtension ? window.devToolsExtension() : f => f));
 
 export const history = syncHistoryWithStore(browserHistory, store);
